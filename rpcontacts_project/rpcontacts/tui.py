@@ -72,7 +72,7 @@ class ContactsApp(App):
             if contact_data:
                 self.db.add_contact(Contact(None, *contact_data))
                 contact = self.db.get_last_contact()
-                self.query_one(DataTable).add_row(*contact.all()[1:], key=id)
+                self.query_one(DataTable).add_row(*contact.all()[1:], key=contact.id)
 
         self.push_screen(InputDialog(), check_contact)
 
@@ -136,18 +136,18 @@ class InputDialog(Screen):
             Label("Add Contact", id="title"),
             Label("First Name:", classes="label"),
             Input(placeholder="Contact First Name", classes="input", id="firstName"),
-            # Label("Middle Name:", classes="label"),
-            # Input(placeholder="Contact Middle Name", classes="input", id="middleName"),
-            # Label("Last Name:", classes="label"),
-            # Input(placeholder="Contact Last Name", classes="input", id="lastName"),
+            Label("Middle Name:", classes="label"),
+            Input(placeholder="Contact Middle Name", classes="input", id="middleName"),
+            Label("Last Name:", classes="label"),
+            Input(placeholder="Contact Last Name", classes="input", id="lastName"),
             Label("Phone:", classes="label"),
             Input(placeholder="Contact Phone", classes="input", id="phone"),
             Label("Email:", classes="label"),
             Input(placeholder="Contact Email", classes="input", id="email"),
-            # Label("Birthday:", classes="label"),
-            # Input(placeholder="Contact Birthday", classes="input", id="birthday"),
-            # Label("Memo:", classes="label"),
-            # Input(placeholder="Contact Memo", classes="input", id="memo"),
+            Label("Birthday:", classes="label"),
+            Input(placeholder="Contact Birthday", classes="input", id="birthday"),
+            Label("Memo:", classes="label"),
+            Input(placeholder="Contact Memo", classes="input", id="memo"),
             Static(),
             Button("Cancel", variant="warning", id="cancel"),
             Button("Ok", variant="success", id="ok"),
@@ -156,9 +156,13 @@ class InputDialog(Screen):
 
     def on_button_pressed(self, event):
         if event.button.id == "ok":
-            name = self.query_one("#name", Input).value
+            firstName = self.query_one("#firstName", Input).value
+            middleName = self.query_one("#middleName", Input).value
+            lastName = self.query_one("#lastName", Input).value
             phone = self.query_one("#phone", Input).value
             email = self.query_one("#email", Input).value
-            self.dismiss((name, phone, email))
+            birthday = self.query_one("#birthday", Input).value
+            memo = self.query_one("#memo", Input).value
+            self.dismiss((firstName, middleName, lastName, phone, email, birthday, memo))
         else:
             self.dismiss(())
