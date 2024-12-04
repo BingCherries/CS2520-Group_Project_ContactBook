@@ -51,7 +51,7 @@ class Database:
     def delete_contact(self, id):
         self._run_query(
             "DELETE FROM contacts WHERE id=(?);",
-            id,
+            (id,),
         )
 
     def clear_all_contacts(self):
