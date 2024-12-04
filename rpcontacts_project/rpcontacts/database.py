@@ -44,7 +44,7 @@ class Database:
 
     def add_contact(self, contact: Contact):
         self._run_query(
-            "INSERT INTO contacts VALUES (NULL, ?, ?, ?, ? , ?, ?, ?);",
+            "INSERT INTO contacts VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);",
             contact.all()[1:]
         )
 
