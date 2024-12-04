@@ -55,11 +55,11 @@ InputDialog {
 }
 
 #input-dialog {
-    grid-size: 3 5;
+    grid-size: 3 9;
     grid-gutter: 1 1;
     padding: 0 1;
     width: 50;
-    height: 20;
+    height: 40;
     border: solid green;
     background: $surface;
 }

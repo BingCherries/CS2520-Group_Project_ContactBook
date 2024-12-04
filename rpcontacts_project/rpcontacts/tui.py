@@ -1,3 +1,4 @@
+from rpcontacts.contact import Contact
 from textual.app import App, on
 from textual.containers import Grid, Horizontal, Vertical
 from textual.screen import Screen
@@ -30,7 +31,7 @@ class ContactsApp(App):
         yield Header()
         contacts_list = DataTable(classes="contacts-list")
         contacts_list.focus()
-        contacts_list.add_columns("Name", "Phone", "Email")
+        contacts_list.add_columns("First Name", "Middle Name", "Last Name", "Phone", "Email", "Birthday", "Memo")
         contacts_list.cursor_type = "row"
         contacts_list.zebra_stripes = True
         add_button = Button("Add", variant="success", id="add")
@@ -52,9 +53,8 @@ class ContactsApp(App):
 
     def _load_contacts(self):
         contacts_list = self.query_one(DataTable)
-        for contact_data in self.db.get_all_contacts():
-            id, *contact = contact_data
-            contacts_list.add_row(*contact, key=id)
+        for contact in self.db.get_all_contacts():
+            contacts_list.add_row(*contact.all()[1:], key=contact.id)
 
     def action_toggle_dark(self):
         self.dark = not self.dark
@@ -70,9 +70,9 @@ class ContactsApp(App):
     def action_add(self):
         def check_contact(contact_data):
             if contact_data:
-                self.db.add_contact(contact_data)
-                id, *contact = self.db.get_last_contact()
-                self.query_one(DataTable).add_row(*contact, key=id)
+                self.db.add_contact(Contact(None, *contact_data))
+                contact = self.db.get_last_contact()
+                self.query_one(DataTable).add_row(*contact.all()[1:], key=contact.id)
 
         self.push_screen(InputDialog(), check_contact)
 
@@ -134,12 +134,20 @@ class InputDialog(Screen):
     def compose(self):
         yield Grid(
             Label("Add Contact", id="title"),
-            Label("Name:", classes="label"),
-            Input(placeholder="Contact Name", classes="input", id="name"),
+            Label("First Name:", classes="label"),
+            Input(placeholder="Contact First Name", classes="input", id="firstName"),
+            Label("Middle Name:", classes="label"),
+            Input(placeholder="Contact Middle Name", classes="input", id="middleName"),
+            Label("Last Name:", classes="label"),
+            Input(placeholder="Contact Last Name", classes="input", id="lastName"),
             Label("Phone:", classes="label"),
             Input(placeholder="Contact Phone", classes="input", id="phone"),
             Label("Email:", classes="label"),
             Input(placeholder="Contact Email", classes="input", id="email"),
+            Label("Birthday:", classes="label"),
+            Input(placeholder="Contact Birthday", classes="input", id="birthday"),
+            Label("Memo:", classes="label"),
+            Input(placeholder="Contact Memo", classes="input", id="memo"),
             Static(),
             Button("Cancel", variant="warning", id="cancel"),
             Button("Ok", variant="success", id="ok"),
@@ -148,9 +156,13 @@ class InputDialog(Screen):
 
     def on_button_pressed(self, event):
         if event.button.id == "ok":
-            name = self.query_one("#name", Input).value
+            firstName = self.query_one("#firstName", Input).value
+            middleName = self.query_one("#middleName", Input).value
+            lastName = self.query_one("#lastName", Input).value
             phone = self.query_one("#phone", Input).value
             email = self.query_one("#email", Input).value
-            self.dismiss((name, phone, email))
+            birthday = self.query_one("#birthday", Input).value
+            memo = self.query_one("#memo", Input).value
+            self.dismiss((firstName, middleName, lastName, phone, email, birthday, memo))
         else:
             self.dismiss(())
